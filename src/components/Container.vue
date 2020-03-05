@@ -3,8 +3,10 @@
     <div class="container">
       <h1>Poke Matching</h1>
       <div class="cards">
-        <li v-for="poke in pokemons" :key="poke" class="card">
-          <img class="cardimage" :src="require(`../../src/assets/img/pokemon/g1/${poke}.png`)" />
+        <li v-for="(poke,i) in pokemons" :key="poke.id" class="card">
+          <p>{{ getImage(i)}}</p>
+          {{poke.imageUrl}}
+          <img class="cardimage" :src="poke.imageUrl" />
         </li>
       </div>
     </div>
@@ -12,40 +14,52 @@
 </template>
 
 <script>
+var firebase = require("firebase");
+const firebaseConfig = require("../firebasekey/config");
+
+// Initialize Firebase
+firebase.initializeApp(firebaseConfig);
+var db = firebase.firestore();
+
 export default {
-  
+  mounted() {
+    db.collection("pokemons")
+      .get()
+      .then(querySnapshot => {
+        querySnapshot.forEach(doc => {
+          let obj = { ...doc.data() };
+          this.pokemons.push(obj);
+          console.log(obj);
+          // console.log(`${doc.id} => ${doc.data().pokemon}`);
+        });
+      });
+  },
   data() {
     return {
-      pokemons: [
-        "bulbasaur",
-        "ivysaur",
-        "venusaur",
-        "charmander",
-        "charmeleon",
-        "charizard",
-        "squirtle",
-        "wartortle",
-        "blastoise",
-        "caterpie",
-        "metapod",
-        "butterfree",
-        "weedle",
-        "kakuna",
-        "beedrill",
-        "pidgey",
-        "pidgeotto",
-        "pidgeot",
-        "rattata",
-        "raticate",
-        "spearow",
-        "fearow",
-        "ekans",
-        "nidorina",
-        "nidoqueen"
-      ]
+      pokemons: []
     };
   },
-  name: "Container"
+  name: "Container",
+  methods: {
+    getPokemons() {},
+    getImage(index) {
+      var that = this;
+      var storage = firebase.storage();
+      var gsReference = storage.refFromURL(
+        "gs://simpleblog-297e2.appspot.com/pokemons/g1/aerodactyl.png"
+      );
+      gsReference
+        .getDownloadURL()
+        .then(function(url) {
+          console.log(url + index);
+          that.pokemons[index].imageUrl = url;
+          console.log(that.pokemons);
+        })
+        .catch(function(error) {
+          console.error(error);
+        });
+    }
+  }
 };
 </script>
 
