@@ -1,6 +1,5 @@
 <template>
   <div id="app">
-
     <!-- <img alt="Vue logo" src="./assets/logo.png"> -->
     <Container />
   </div>
@@ -8,8 +7,6 @@
 
 <script>
 import Container from "./components/Container.vue";
-
-
 
 export default {
   name: "App",
@@ -27,5 +24,9 @@ export default {
   text-align: center;
   color: #2c3e50;
   margin-top: 20px;
+}
+.d-flex {
+  display: flex;
+  flex-direction: column;
 }
 </style>
